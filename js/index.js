@@ -37,7 +37,7 @@ function countdown() {
   countContainer.style.setProperty("display", "flex");
   countContainer.appendChild(countdownElement);
 
-  let count = 5;
+  let count = 3;
   const intervalId = setInterval(async () => {
     countdownElement.textContent = count;
     count--;
