@@ -1,39 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mikeys Fotobox</title>
+    <link rel="stylesheet" href="./style.css" />
+    <!-- <style type="text/css" rel="stylesheet" href="./style.css"></style> -->
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mikeys Fotobox</title>
-  <link rel="stylesheet" href="./style.css">
-  <!-- <style type="text/css" rel="stylesheet" href="./style.css"></style> -->
-</head>
+  <body>
+    <main class="flex-container">
+      <div id="left">
+        <h1>Mikeys Fotobox</h1>
+        <video id="webcam"></video>
 
-<body>
-  <main class="flex-container">
-    <div id="left">
-      <h1>Mikeys Fotobox</h1>
-      <select id="select">
-      </select>
-      <div id="placeholder"></div>
-      <video id="webcam"></video>
-
-      <div id="button-container">
-        <button id="record-button">Foto</button>
+        <div id="button-container">
+          <button id="record-button">Foto</button>
+        </div>
       </div>
+
+      <div id="right">
+        <div class="photostream-container">
+          <!-- Placeholder images will be dynamically loaded here -->
+        </div>
+      </div>
+    </main>
+    <div id="bottom">
+      <label for="select">Wähle Kamera:</label>
+      <select id="select" name="select"></select>
+
+      <form id="email-form" action="/submit-email" method="POST">
+        <label for="email">Für eine Mail, wenn Fotos öffentlich sind:</label>
+        <input type="email" id="email" name="email" required />
+        <input type="submit" value="Submit" />
+      </form>
     </div>
 
-    <div id="right">
-      <div class="photostream-container">
-        <!-- Placeholder images will be dynamically loaded here -->
-      </div>
-    </div>
-  </main>
+    <div id="countdown-container"></div>
 
-  <div id="countdown-container">
-  </div>
-
-  <script src="index.js"></script>
-</body>
-
+    <script src="index.js"></script>
+  </body>
 </html>

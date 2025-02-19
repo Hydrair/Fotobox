@@ -173,12 +173,34 @@ async function sendImageToServer(imageData) {
   }
 }
 
+function clearForm() {
+  document.getElementById('email-form').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    const email = document.getElementById('email').value;
+
+    fetch('/submit-email', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'email=' + encodeURIComponent(email)
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log(data); // Handle server response here
+        document.getElementById('email-form').reset(); // Clear the form
+    })
+    .catch(error => console.error('Error:', error));
+});}
+
 function setup() {
   navigator.mediaDevices.enumerateDevices().then(gotDevices);
   getWebcam();
   clickButton();
   blurButton();
   loadImages();
+  clearForm();
 }
 
 setup();

@@ -3,6 +3,7 @@ const express = require("express");
 const { spawn } = require("child_process");
 const path = require("path");
 const fs = require("fs");
+const bodyParser = require('body-parser');
 
 const app = express();
 const webPort = 3000;
@@ -15,6 +16,7 @@ app.use(express.static("public"));
 app.use(express.static("css"));
 app.use(express.static("js"));
 app.use(express.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Serve the website on port 3000
 app.get("/", (req, res) => {
@@ -89,6 +91,28 @@ app.post("/upload", express.json(), async (req, res) => {
       .json({ error: "An error occurred while handling the image upload" });
   }
 });
+
+app.post("/submit-email", async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res
+        .status(400)
+        .json({ error: "No mail submitted" });
+    }
+    if (email && /\S+@\S+\.\S+/.test(email)) {
+      // Process the email (e.g., save to database, send confirmation email, etc.)
+      fd = fs.openSync('mails.txt', 'a');
+      fs.appendFileSync(fd, email + "\n", "utf8");     
+      res.send(`Email submitted: ${email}`);
+    } else {
+        res.send('Invalid email format.');
+    }
+  } catch (err) {
+    console.error("Error handling mail list:", err);
+  }
+});
+
 
 const server = http.createServer(app);
 
