@@ -118,20 +118,51 @@ async function loadImages() {
   document.body.style.setProperty("--duration", `${imagePaths.length * 2}s`);
 }
 
+let currentStream = null;
+
 async function getWebcam(device) {
-  const videoConstraints = device
-    ? {
-        deviceId: device,
-        width: 1920,
-        height: 1080,
-      }
-    : true;
-  const stream = await navigator.mediaDevices.getUserMedia({
-    video: videoConstraints,
-  });
+  // Release the previous camera first, Windows can't open the same camera twice
+  if (currentStream) {
+    currentStream.getTracks().forEach((track) => track.stop());
+    currentStream = null;
+  }
+
+  const videoConstraints = {
+    width: { ideal: 1920 },
+    height: { ideal: 1080 },
+    ...(device ? { deviceId: { exact: device } } : {}),
+  };
+  try {
+    currentStream = await navigator.mediaDevices.getUserMedia({
+      video: videoConstraints,
+    });
+  } catch (err) {
+    console.error("Error accessing webcam:", err);
+    showCameraError(err);
+    return;
+  }
+  showCameraError(null);
+
   const video = document.getElementById("webcam");
-  video.srcObject = stream;
-  video.play();
+  video.srcObject = currentStream;
+  video.play().catch(() => {});
+}
+
+function showCameraError(err) {
+  const messages = {
+    NotAllowedError:
+      "Kamerazugriff wurde verweigert – bitte im Browser erlauben und neu laden.",
+    NotReadableError:
+      "Kamera ist belegt – läuft sie noch in einem anderen Programm (z. B. Teams, Zoom) oder Tab?",
+    NotFoundError: "Keine Kamera gefunden.",
+    OverconstrainedError: "Die gewählte Kamera ist nicht verfügbar.",
+  };
+  const element = document.getElementById("camera-error");
+  element.hidden = !err;
+  if (err) {
+    element.textContent =
+      messages[err.name] || `Kamera konnte nicht gestartet werden: ${err.message}`;
+  }
 }
 
 function gotDevices(mediaDevices) {
@@ -139,6 +170,9 @@ function gotDevices(mediaDevices) {
   select.innerHTML = "";
   select.appendChild(document.createElement("option"));
   let count = 1;
+  const activeDevice = currentStream
+    ? currentStream.getVideoTracks()[0].getSettings().deviceId
+    : "";
   mediaDevices.forEach((mediaDevice) => {
     if (mediaDevice.kind === "videoinput") {
       const option = document.createElement("option");
@@ -146,6 +180,7 @@ function gotDevices(mediaDevices) {
       const label = mediaDevice.label || `Camera ${count++}`;
       const textNode = document.createTextNode(label);
       option.appendChild(textNode);
+      option.selected = mediaDevice.deviceId === activeDevice;
       select.appendChild(option);
     }
   });
@@ -223,9 +258,20 @@ async function showGalleryLink() {
   document.getElementById("gallery-url").textContent = galleryUrl;
 }
 
+async function setupCamera() {
+  if (!navigator.mediaDevices) {
+    showCameraError({
+      message: "Kamera ist nur über localhost oder HTTPS verfügbar.",
+    });
+    return;
+  }
+  await getWebcam();
+  // Device ids and labels are only available after camera access was granted
+  gotDevices(await navigator.mediaDevices.enumerateDevices());
+}
+
 function setup() {
-  navigator.mediaDevices.enumerateDevices().then(gotDevices);
-  getWebcam();
+  setupCamera();
   clickButton();
   blurButton();
   loadImages();
