@@ -1,17 +1,19 @@
 {
   "name": "fotobox",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Selbstgebaute Fotobox im Browser: Webcam, Countdown, Galerie, Slideshow, QR-Code und ZIP-Download",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.20.2",
+    "archiver": "^7.0.1",
     "express": "^4.18.2",
-    "scss": "^0.2.4",
-    "vite": "^4.4.6"
+    "qrcode": "^1.5.4"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

@@ -1,5 +1,10 @@
+// Prevents starting a second countdown while a photo is being taken.
+let busy = false;
+
 function clickButton() {
   document.getElementById("record-button").addEventListener("click", () => {
+    if (busy) return;
+    busy = true;
     embiggenVideo();
     // setTimeout(() => {
     //   shrinkVideo();
@@ -46,18 +51,35 @@ function countdown() {
       countdownElement.innerHTML =
         "<div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>";
       countdownElement.classList.add("lds-roller");
-      capturePhoto();
+      const filename = await capturePhoto();
       countdownElement.innerHTML = "";
       countdownElement.classList.remove("lds-roller");
-      countdownElement.classList.add("img-preview");
+      if (filename) {
+        showPreview(countdownElement, filename);
+      }
 
       setTimeout(() => {
         shrinkVideo();
         countContainer.style.setProperty("display", "none");
         countContainer.removeChild(countdownElement);
-      }, 3000);
+        busy = false;
+      }, filename ? 8000 : 0);
     }
   }, 1000);
+}
+
+// Shows the photo that was just taken together with a QR code
+// that opens it in the gallery on the guest's phone.
+function showPreview(element, filename) {
+  element.classList.add("img-preview");
+  element.style.backgroundImage = `url(images/${filename})`;
+
+  const qr = document.createElement("figure");
+  qr.classList.add("qr-card", "preview-qr");
+  qr.innerHTML = `
+    <img src="/qr.svg?path=${encodeURIComponent(`/gallery#${filename}`)}" alt="QR-Code zum Foto" />
+    <figcaption>Foto aufs Handy</figcaption>`;
+  element.appendChild(qr);
 }
 
 function blurButton() {
@@ -70,8 +92,10 @@ function blurButton() {
 
 // JavaScript to load and display the placeholder images
 async function loadImages() {
-  const response = await fetch("/images");
-  const imagePaths = (await response.json()).sort(() => Math.random() - 0.5);
+  const response = await fetch("/api/images");
+  const imagePaths = (await response.json())
+    .map((image) => image.url)
+    .sort(() => Math.random() - 0.5);
 
   const container = document.createElement("div");
   container.classList.add("photostream-container");
@@ -140,13 +164,13 @@ function capturePhoto() {
 
   const imageData = canvas.toDataURL("image/jpeg");
 
-  // Send the captured image data to the server
+  // Send the captured image data to the server, resolves to the filename
   return sendImageToServer(imageData);
 }
 
 async function sendImageToServer(imageData) {
   try {
-    const response = await fetch("http://localhost:3000/upload", {
+    const response = await fetch("/upload", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -159,8 +183,7 @@ async function sendImageToServer(imageData) {
       const { filename } = data; // Get the filename from the response JSON
       console.log("Image uploaded successfully. Filename:", filename);
       loadImages(); // Load images after successful upload
-      const countdown = document.getElementById("countdown");
-      countdown.style.backgroundImage = `url(images/${filename})`;
+      return filename;
     } else {
       console.error(
         "Failed to upload image:",
@@ -194,6 +217,12 @@ function clearForm() {
     .catch(error => console.error('Error:', error));
 });}
 
+async function showGalleryLink() {
+  const response = await fetch("/api/config");
+  const { galleryUrl } = await response.json();
+  document.getElementById("gallery-url").textContent = galleryUrl;
+}
+
 function setup() {
   navigator.mediaDevices.enumerateDevices().then(gotDevices);
   getWebcam();
@@ -201,6 +230,7 @@ function setup() {
   blurButton();
   loadImages();
   clearForm();
+  showGalleryLink();
 }
 
 setup();

@@ -1,0 +1,128 @@
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: monospace;
+  color: azure;
+  background: #00aa77;
+  background-image: url("zenbg-1.png"), url("zenbg-2.png");
+  background-repeat: repeat-x, repeat;
+}
+
+header {
+  padding: 20px 16px 10px;
+  text-align: center;
+}
+
+h1 {
+  margin: 0 0 10px;
+  font-size: clamp(32px, 8vw, 60px);
+  text-shadow: 0 3px 1px rgba(122, 17, 8, 0.8);
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.button {
+  display: inline-block;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-family: monospace;
+  font-size: 1rem;
+  font-weight: 900;
+  text-decoration: none;
+  text-transform: uppercase;
+  background: red;
+  box-shadow: 0 4px 0 rgb(183, 9, 0);
+  cursor: pointer;
+}
+
+.button.secondary {
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5);
+}
+
+#gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  padding: 16px;
+}
+
+#gallery img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  cursor: zoom-in;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+#empty {
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+#lightbox {
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: rgba(0, 0, 0, 0.92);
+}
+
+#lightbox[open] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+#lightbox-image {
+  max-width: 100%;
+  max-height: calc(100vh - 120px);
+  object-fit: contain;
+}
+
+.icon {
+  position: absolute;
+  border: none;
+  color: white;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+#lightbox-close {
+  top: 12px;
+  right: 12px;
+}
+
+#lightbox-prev,
+#lightbox-next {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#lightbox-prev {
+  left: 12px;
+}
+
+#lightbox-next {
+  right: 12px;
+}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mikeys Fotobox – Galerie</title>
+    <link rel="stylesheet" href="./gallery.css" />
+  </head>
+
+  <body>
+    <header>
+      <h1>Mikeys Fotobox</h1>
+      <p id="photo-count"></p>
+      <nav>
+        <a class="button" href="/download.zip" download>Alle Fotos als ZIP</a>
+        <a class="button secondary" href="/slideshow">Slideshow</a>
+      </nav>
+    </header>
+
+    <main id="gallery"></main>
+    <p id="empty" hidden>Noch keine Fotos – ab zur Fotobox!</p>
+
+    <dialog id="lightbox">
+      <button id="lightbox-close" class="icon" aria-label="Schließen">✕</button>
+      <button id="lightbox-prev" class="icon" aria-label="Vorheriges Foto">‹</button>
+      <img id="lightbox-image" alt="" />
+      <button id="lightbox-next" class="icon" aria-label="Nächstes Foto">›</button>
+      <a id="lightbox-download" class="button" download>Foto herunterladen</a>
+    </dialog>
+
+    <script src="gallery.js"></script>
+  </body>
+</html>
